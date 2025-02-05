@@ -1,4 +1,4 @@
-# 3rd Party Host OS Configuration Modules for Mirantis OpenStack for Kubernetes
+# 3rd Party Host OS Configuration Modules for MOSK
 
 Welcome to the collection of 3rd party-developed **Host OS Configuration Modules** for **Mirantis OpenStack for Kubernetes (MOSK)**. This repository contains various configuration modules created and contributed by Mirantis Professional Services, Customer Support teams, partners, and users of Mirantis' products.
 
