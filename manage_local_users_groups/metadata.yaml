@@ -1,0 +1,6 @@
+name: manage-local-users-groups
+description: 'Management of the local users and user groups with corresponding privileges'
+version: 1.2.1
+valuesJsonSchema: schema.json
+playbook: main.yaml
+
