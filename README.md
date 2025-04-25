@@ -17,18 +17,18 @@ To use any of the modules from this repository:
 
 1. Clone the repository:
    ```sh
-   git clone https://github.com/your-org/mosk-host-os-modules.git
-   cd mosk-host-os-modules
+   git clone https://github.com/Mirantis/mosk-hocm-contrib.git
+   cd mosk-hocm-contrib
    ```
-2. Browse the available modules in the respective directories.
+2. Browse the available modules in the root directory of this repository, check the modules' documentation.
 3. Follow the provided documentation or instructions within each module's folder to build it.
 4. Publish the built binary to a HTTP server where your MOSK management cluster can reach it.
 5. Following the instructions provided in [MOSK Operations Guide :: Bare metal operations :: Host OS configuration](https://docs.mirantis.com/mosk/latest/ops/bm-operations/host-os-conf.html) for adding a custom module. This is achieved by creating a new HostOSConfigurationModules custom resource in the MOSK management cluster API.
-6. Create a new HostOSConfiguration referring to the new module by name, passing necessary parameters and targeting the nodes by labels.
+6. Create a new HostOSConfiguration referring to the new module by name, passing necessary parameters and targeting  nodes by labels.
 
 ## 📜 Contribution Guidelines
 
-We encourage contributions from the Mirantis community! If you have developed a module that you believe would benefit others, feel free to contribute it by following these steps:
+We encourage contributions from the community! If you have developed a module that you believe would benefit others, feel free to contribute it by following these steps:
 
 1. **Fork** this repository.
 2. **Create a new branch** for your module:
@@ -41,7 +41,9 @@ We encourage contributions from the Mirantis community! If you have developed a 
 ### Contribution Requirements
 - Ensure your module is well-documented.
 - Include a `README.md` explaining the purpose and usage of the module.
-- Do not include proprietary or sensitive information.
+- Do not include proprietary or sensitive information, like password, keys, SSL certificates, etc.
+- Leave your name and contact e-mail address in the metadata, so that users of your module can reach out if necessary.
+- Please make sure to update the version of your module, when introducing changes to the code, so that users can pick up the changes consistenly.
 
 ## 🛠 Support & Issues
 
@@ -56,4 +58,4 @@ This repository is open-source and distributed under the **Apache 2.0 License**.
 
 ---
 
-We appreciate your contributions and efforts in making MOSK a more flexible and configurable platform! 🚀
+We appreciate your contributions and efforts in making MOSK a truly flexible and configurable platform! 🚀
