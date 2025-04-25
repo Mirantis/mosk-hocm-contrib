@@ -23,7 +23,7 @@ To use any of the modules from this repository:
 2. Browse the available modules in the root directory of this repository, check the modules' documentation.
 3. Package the selected module. A package is a simple `*.tgz` archive of all the files in the directory. Make sure to include the version of the module into the archive name.
    ```sh
-   tar -czf module_name-module_version.tar.gz -C /path/to/module/directory .
+   tar -czf module_name-module_version.tgz -C /path/to/module/directory .
    ```   
 5. Place the package to a HTTP server where your MOSK management cluster can download it.
 6. Following the instructions provided in [MOSK Operations Guide :: Bare metal operations :: Host OS configuration](https://docs.mirantis.com/mosk/latest/ops/bm-operations/host-os-conf.html) for adding a custom module. This is achieved by creating a new HostOSConfigurationModules custom resource in the MOSK management API.
