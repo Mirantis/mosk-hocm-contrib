@@ -1,0 +1,6 @@
+name: ntp
+description: 'Module for ntp configuration'
+version: 0.0.4-dev
+valuesJsonSchema: schema.json
+docURL: https://github.com/Mirantis/host-os-modules/blob/main/ntp/README.md
+playbook: main.yaml
