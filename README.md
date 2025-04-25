@@ -23,7 +23,8 @@ To use any of the modules from this repository:
 2. Browse the available modules in the respective directories.
 3. Follow the provided documentation or instructions within each module's folder to build it.
 4. Publish the built binary to a HTTP server where your MOSK management cluster can reach it.
-5. Following the instructions provided in [MOSK Operations Guide :: Bare metal operations :: Host OS configuration](https://docs.mirantis.com/mosk/latest/ops/bm-operations/host-os-conf.html)
+5. Following the instructions provided in [MOSK Operations Guide :: Bare metal operations :: Host OS configuration](https://docs.mirantis.com/mosk/latest/ops/bm-operations/host-os-conf.html) for adding a custom module. This is achieved by creating a new HostOSConfigurationModules custom resource in the MOSK management cluster API.
+6. Create a new HostOSConfiguration referring to the new module by name, passing necessary parameters and targeting the nodes by labels.
 
 ## 📜 Contribution Guidelines
 
