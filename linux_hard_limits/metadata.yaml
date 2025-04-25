@@ -1,0 +1,6 @@
+name: linux_hard_limits
+description: 'Module for linux soft/hard limits configuration'
+version: 1.0.0
+valuesJsonSchema: schema.json
+docURL: https://github.com/Mirantis/host-os-modules/blob/main/linux_hard_limits/README.md
+playbook: main.yaml
