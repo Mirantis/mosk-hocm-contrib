@@ -1,8 +1,8 @@
-# ntp module
+# NTP - host OS configuration module for MOSK
 
-The ntp module allows the operator to manage ntp servers at runtime on cluster machines using the mechanism implemented in the day-2 operations API.
+The hereby module allows cloud operators to manage NTP settings on deployed machines comprising MOSK clusters. The module is implemented within the MOSK's [Host OS configuration framework](https://docs.mirantis.com/mosk/latest/ops/bm-operations/host-os-conf.html)
 
-> Note: This module is implemented and validated against the following Ansible versions provided by MCC for Ubuntu 22.04
+> Note: This module is tested against the following versions of Ansible that are provided in Ubuntu 22.04 shipped with MOSK
 > in the Cluster releases 16.3.0 and 17.3.0: Ansible core 2.12.10 and Ansible collection 5.10.0.
 >
 > To verify the Ansible version in a specific Cluster release, refer to
@@ -12,14 +12,15 @@ The ntp module allows the operator to manage ntp servers at runtime on cluster m
 
 # Version 1.0.0 (latest)
 
-Using the ntp module 1.0.0, you can configure list of ntp servers.
+Using the NTP module 1.0.0, you can configure the list of NTP servers on the hosts.
+
 The module contains the following input parameters:
 
-- `ntp_servers`: List of NTP server.
+- `ntp_servers`: List of NTP servers.
 
 # Configuration examples
 
-Example of `HostOSConfiguration` with the ntp module 1.0.0 for configuration of ntp servers:
+Example of NTP servers configuration on MOSK compute nodes
 
 ```
     apiVersion: kaas.mirantis.com/v1alpha1
@@ -39,5 +40,5 @@ Example of `HostOSConfiguration` with the ntp module 1.0.0 for configuration of 
             - 3.ubuntu.pool.ntp.org
       machineSelector:
         matchLabels:
-          day2-custom-label: "true"
+          openstack-compute-node=enabled: "true"
 ```
