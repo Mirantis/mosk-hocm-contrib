@@ -1,6 +1,6 @@
 # NTP - host OS configuration module for MOSK
 
-The hereby module allows cloud operators to manage NTP settings on deployed machines comprising MOSK clusters. The module is implemented within the MOSK's [Host OS configuration framework](https://docs.mirantis.com/mosk/latest/ops/bm-operations/host-os-conf.html)
+The hereby module allows cloud operators to enable and configure NTP-based time synchronisation on deployed machines comprising a MOSK cluster. The module is implemented within the MOSK's [Host OS configuration framework](https://docs.mirantis.com/mosk/latest/ops/bm-operations/host-os-conf.html)
 
 > Note: This module is tested against the following versions of Ansible that are provided in Ubuntu 22.04 shipped with MOSK
 > in the Cluster releases 16.3.0 and 17.3.0: Ansible core 2.12.10 and Ansible collection 5.10.0.
