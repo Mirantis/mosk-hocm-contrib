@@ -4,13 +4,12 @@ Welcome to the collection of 3rd party-developed **Host OS Configuration Modules
 
 ## ⚠️ Disclaimer
 
-- **Mirantis does not guarantee** that any of the contributed modules will work or be compatible with the latest version of MOSK.
-- **Mirantis is not responsible** for any damage, issues, or disruptions caused by the usage of these modules.
-- Use these modules **at your own risk** and test them in a safe environment before deploying them in production.
+- **Mirantis does not guarantee** that any of the contributed modules will be functional at any time or will be compatible with the latest version of MOSK.
+- **Mirantis is not responsible** for any damage, issues, or disruptions caused by the usage of these modules, use these modules **at your own risk** and test them in a safe environment before deploying them in production.
 
 ## 📌 What is This Repository For?
 
-This repository serves as a community-driven collection of host OS configuration modules, which can be used to fine-tune the underlying OS for MOSK deployments. Contributors from the community, Mirantis Professional Services, and customer support teams share their modules here.
+This repository serves as a community-driven collection of host OS configuration modules, which can be used to fine-tune the underlying host operating system for MOSK deployments. Contributors from the community, Mirantis professional services, and customer support teams can publish their modules here.
 
 ## 🚀 Getting Started
 
@@ -22,7 +21,9 @@ To use any of the modules from this repository:
    cd mosk-host-os-modules
    ```
 2. Browse the available modules in the respective directories.
-3. Follow the provided documentation or instructions within each module's folder to apply it.
+3. Follow the provided documentation or instructions within each module's folder to build it.
+4. Publish the built binary to a HTTP server where your MOSK management cluster can reach it.
+5. Following the instructions provided in [MOSK Operations Guide :: Bare metal operations :: Host OS configuration](https://docs.mirantis.com/mosk/latest/ops/bm-operations/host-os-conf.html)
 
 ## 📜 Contribution Guidelines
 
