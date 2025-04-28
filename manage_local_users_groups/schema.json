@@ -1,0 +1,43 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "type": "object",
+  "properties": {
+    "cleanup_mode": {
+      "type": "boolean",
+      "description": "Set to true to remove all groups, users, and privileges defined in the configuration."
+    },
+    "groups": {
+      "type": "array",
+      "description": "List of groups, their privileges, and associated users.",
+      "items": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "description": "Name of the group.",
+            "minLength": 1
+          },
+          "privileges": {
+            "type": "string",
+            "description": "Sudo privileges for the group.",
+            "minLength": 1
+          },
+          "users": {
+            "type": "array",
+            "description": "List of users in the group.",
+            "items": {
+              "type": "string",
+              "minLength": 1
+            },
+            "minItems": 1
+          }
+        },
+        "required": ["name", "users"],
+        "additionalProperties": false
+      },
+      "minItems": 1
+    }
+  },
+  "required": ["groups"],
+  "additionalProperties": false
+}
