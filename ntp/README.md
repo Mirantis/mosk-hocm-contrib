@@ -19,7 +19,7 @@ The module contains the following input parameters:
 
 # Configuration examples
 
-Example of `HostOSConfiguration` with the `ntp` module 1.0.0 that configures NTP servers configuration on MOSK compute nodes. 
+Example of `HostOSConfiguration` with the `ntp` module 1.0.0 that configures NTP servers on MOSK compute nodes. 
 
 ```yaml
     apiVersion: kaas.mirantis.com/v1alpha1
