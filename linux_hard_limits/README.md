@@ -1,10 +1,10 @@
-# linux_hard_limit module
+# Linux Hard Limits - host OS configuration module for MOSK
 
-The `linux_hard_limit` module allows the operator to manage system hard limits at runtime on cluster machines using the mechanism implemented in the day-2 operations API.
+The module allows the operator to manage system hard limits on machines comprising a MOK cluster. The module is implemented within the MOSK's [Host OS configuration framework](https://docs.mirantis.com/mosk/latest/ops/bm-operations/host-os-conf.html)
 
 > Note: This module is implemented only for the Ubuntu 22.04 host OS.
 
-> Note: This module is implemented and validated against the following Ansible versions provided by MCC for Ubuntu 22.04 in the Cluster release 17.3.0: Ansible Core 2.12.10 and Ansible Collection 5.10.0.
+> Note: This module is implemented and validated against the following Ansible versions provided by Ubuntu 22.04 shipped with MOSK Cluster release 17.3.0: Ansible Core 2.12.10 and Ansible Collection 5.10.0.
 >
 > To verify the Ansible version in a specific Cluster release, refer to
 > [Container Cloud documentation: Release notes - Cluster releases](https://docs.mirantis.com/container-cloud/latest/release-notes/cluster-releases.html).
