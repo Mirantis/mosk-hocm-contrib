@@ -48,7 +48,7 @@ It is advised to set `cleanup_before` to true to avoid misconfiguration of the t
 
 # Configuration examples
 
-Example of `HostOSConfiguration` with the `linux_hard_limit` module 1.0.0 for configuring limits for maximum open files and maximum processes:
+Example of `HostOSConfiguration` with the `linux_hard_limit` module 1.0.0 for configuring limits for maximum open files and maximum processes on MOSK compute nodes:
 
 ```yaml
 apiVersion: kaas.mirantis.com/v1alpha1
@@ -74,7 +74,7 @@ spec:
           nproc: 63228
   machineSelector:
     matchLabels:
-      day2-linux-module: 'true'
+      openstack-compute-node=enabled: "true"
 ```
 
 Example of `HostOSConfiguration` with the `linux_hard_limits` module 1.0.0 for dropping previously configured kernel parameters:
@@ -93,7 +93,7 @@ spec:
       cleanup_before: true
   machineSelector:
     matchLabels:
-      day2-linux-module: 'true'
+      openstack-compute-node=enabled: "true"
 ```
 
 ---
