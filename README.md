@@ -11,6 +11,8 @@ Welcome to the collection of 3rd party-developed **Host OS Configuration Modules
 
 This repository serves as a community-driven collection of host OS configuration modules, which can be used to fine-tune the underlying host operating system for MOSK deployments. Contributors from the community, Mirantis professional services, and customer support teams can publish their modules here.
 
+The standard modules shipped with MOSK are maintained under the [Mirantis/mosk-host-os-modules repository on GitHub](https://github.com/Mirantis/mosk-host-os-modules).
+
 ## 🚀 Getting Started
 
 To use any of the modules from this repository:
