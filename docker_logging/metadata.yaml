@@ -1,0 +1,6 @@
+name: docker_logging
+description: 'Module for Docker logging configuration'
+version: 1.0.0
+valuesJsonSchema: schema.json
+docURL: https://github.com/Mirantis/mosk-hocm-contrib/blob/main/docker_logging/README.md
+playbook: main.yaml

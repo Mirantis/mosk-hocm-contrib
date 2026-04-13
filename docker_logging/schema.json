@@ -1,0 +1,22 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "type": "object",
+  "properties": {
+    "max_size": {
+      "type": "string",
+      "description": "Maximum size of a log file before it is rotated (e.g. '100m', '1g'). Corresponds to log-opts max-size in daemon.json.",
+      "pattern": "^[0-9]+(k|m|g)$"
+    },
+    "max_file": {
+      "type": "string",
+      "description": "Maximum number of rotated log files to keep (e.g. '3', '10'). Corresponds to log-opts max-file in daemon.json.",
+      "pattern": "^[1-9][0-9]*$"
+    },
+    "disable_reboot_request": {
+      "type": "boolean",
+      "description": "If true, LCM reboot request file creation will be skipped."
+    }
+  },
+  "required": ["max_size", "max_file"],
+  "additionalProperties": false
+}

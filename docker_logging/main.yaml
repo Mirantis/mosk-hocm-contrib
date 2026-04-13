@@ -1,0 +1,53 @@
+---
+- name: Configure Docker logging options
+  hosts: all
+  become: true
+  tasks:
+    - name: Read existing daemon.json
+      slurp:
+        src: /etc/docker/daemon.json
+      register: daemon_json_raw
+
+    - name: Parse existing daemon.json
+      set_fact:
+        daemon_config: "{{ daemon_json_raw.content | b64decode | from_json }}"
+
+    - name: Apply logging options to Docker config
+      set_fact:
+        daemon_config: >-
+          {{ daemon_config | combine({
+            'log-driver': 'json-file',
+            'log-opts': (daemon_config.get('log-opts', {}) | combine({
+              'max-size': values.max_size,
+              'max-file': values.max_file
+            }))
+          }) }}
+
+    - name: Write updated daemon.json
+      copy:
+        content: "{{ daemon_config | to_nice_json }}\n"
+        dest: /etc/docker/daemon.json
+        owner: root
+        group: root
+        mode: '0644'
+      notify:
+        - Create a reboot request
+
+    - name: Flush handlers
+      meta: flush_handlers
+
+  handlers:
+    - block:
+      - name: Create /run/day2
+        ansible.builtin.file:
+          path: /run/day2
+          state: directory
+        listen: Create a reboot request
+
+      - name: Update /run/day2/reboot-required with reboot reason
+        ansible.builtin.lineinfile:
+          path: "/run/day2/reboot-required"
+          line: Reboot is requested due to changes in /etc/docker/daemon.json config file introduced by docker_logging day2 module
+          create: true
+        listen: Create a reboot request
+      when: not ((values.disable_reboot_request | default(False)) | bool)
