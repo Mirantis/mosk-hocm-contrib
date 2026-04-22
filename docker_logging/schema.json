@@ -12,6 +12,10 @@
       "description": "Maximum number of rotated log files to keep (e.g. '3', '10'). Corresponds to log-opts max-file in daemon.json.",
       "pattern": "^[1-9][0-9]*$"
     },
+    "restart_docker": {
+      "type": "boolean",
+      "description": "If true, docker daemon will be restarted."
+    },
     "disable_reboot_request": {
       "type": "boolean",
       "description": "If true, LCM reboot request file creation will be skipped."

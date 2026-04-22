@@ -32,11 +32,19 @@
         mode: '0644'
       notify:
         - Create a reboot request
+        - Restart docker daemon
 
     - name: Flush handlers
       meta: flush_handlers
 
   handlers:
+    - name: "Restart docker daemon"
+      become: true
+      systemd:
+        name: docker
+        state: restarted
+      when: (values.restart_docker | default(False) | bool)
+
     - block:
       - name: Create /run/day2
         ansible.builtin.file:
