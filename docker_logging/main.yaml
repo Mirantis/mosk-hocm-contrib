@@ -43,7 +43,6 @@
       systemd:
         name: docker
         state: restarted
-      when: (values.restart_docker | default(False) | bool)
 
     - block:
       - name: Create /run/day2
@@ -58,4 +57,3 @@
           line: Reboot is requested due to changes in /etc/docker/daemon.json config file introduced by docker_logging day2 module
           create: true
         listen: Create a reboot request
-      when: not ((values.disable_reboot_request | default(False)) | bool)
