@@ -68,7 +68,7 @@
               register: unload_esp6
               ignore_errors: true
 
-        - name: Post-upload actions
+        - name: Post-unload actions
           when: >
             (unload_rxrpc is defined and not unload_rxrpc.get('skipped', false)) or
             (unload_esp4 is defined and not unload_esp4.get('skipped', false)) or
