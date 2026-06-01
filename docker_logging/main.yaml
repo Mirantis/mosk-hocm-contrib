@@ -54,6 +54,6 @@
       - name: Update /run/day2/reboot-required with reboot reason
         ansible.builtin.lineinfile:
           path: "/run/day2/reboot-required"
-          line: Reboot is requested due to changes in /etc/docker/daemon.json config file introduced by docker_logging day2 module
+          line: Docker engine logging configuration changed by docker_logging HOCM; reboot recommended for new settings to take complete effect
           create: true
         listen: Create a reboot request
