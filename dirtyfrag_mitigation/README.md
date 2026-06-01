@@ -33,7 +33,7 @@ When `revert` is NOT set to `true`, the module performs the following actions:
 3. If `skipDisablingEspModules` is not set to `true`, creates `/etc/modprobe.d/blacklist-esp.conf` to block `esp4` and `esp6` kernel modules.
 4. Verifies whether `esp4` or `esp6` is currently loaded.
 
-If any of the kernel modules are loaded on the host, the `dirtyfrag_mitigation` module also performs the following actions:
+If any of the kernel modules are loaded on the host and `skipDisablingEspModules` is set to `true`, the `dirtyfrag_mitigation` module also performs the following actions:
 
 1. Flushes the IPsec `xfrm` state and policy to clear module hooks.
 2. Attempts to unload `esp4` and `esp6` from the live kernel memory space if loaded.
