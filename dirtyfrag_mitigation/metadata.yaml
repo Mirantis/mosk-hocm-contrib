@@ -1,0 +1,6 @@
+name: dirtyfrag_mitigation
+description: 'Module mitigating "Dirty Frag" vulnerabilities (CVE-2026-43284 / CVE-2026-43500)'
+version: 1.0.0
+valuesJsonSchema: schema.json
+docURL: https://github.com/Mirantis/mosk-hocm-contrib/blob/main/dirtyfrag_mitigation/README.md
+playbook: main.yaml
