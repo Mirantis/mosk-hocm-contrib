@@ -17,7 +17,7 @@ The `dirtyfrag_mitigation` module is designed to mitigate the following vulnerab
 
 The module accepts the following input parameters:
 
-- `skipDisablingEspModules`: Boolean. Optional. Defaults to `true`. Set to `false` to skip disabling Linux kernel modules `esp4` and `esp6`. See the [MOSK clusters with Neutron IPsec-based features enabled](https://github.com/Mirantis/security/blob/main/advisories/0017.md#c-mosk-clusters-with-neutron-ipsec-based-features-enabled) section of the security advisory for details.
+- `skipDisablingEspModules`: Boolean. Optional. Defaults to `false`. Set to `true` to skip disabling Linux kernel modules `esp4` and `esp6`. See the [MOSK clusters with Neutron IPsec-based features enabled](https://github.com/Mirantis/security/blob/main/advisories/0017.md#c-mosk-clusters-with-neutron-ipsec-based-features-enabled) section of the security advisory for details.
 - `revert`: Boolean. Optional. Defaults to `false`. Set to `true` to revert the mitigation and restore original kernel settings.
 
 ## Pre-mitigation requirements
