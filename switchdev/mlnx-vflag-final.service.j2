@@ -1,0 +1,19 @@
+[Unit]
+Description=Bind SR-IOV VFs after network is online (before Docker) — PFs listed for {{ bond_name }} via netplan
+Requires=mlnx-discover.service
+After=network-online.target mlnx-discover.service
+Wants=network-online.target
+Before=docker.service containerd.service
+ConditionPathExists=/etc/lcm/pfs.json
+RefuseManualStart=yes
+RefuseManualStop=yes
+
+[Service]
+Type=oneshot
+RemainAfterExit=yes
+Environment=BOND_NAME={{ bond_name }}
+ExecStart=/usr/local/sbin/mlnx-vflag-final.sh
+SuccessExitStatus=0
+
+[Install]
+WantedBy=multi-user.target

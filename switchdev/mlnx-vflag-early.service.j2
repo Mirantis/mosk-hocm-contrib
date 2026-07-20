@@ -1,0 +1,25 @@
+[Unit]
+Description=Early SR-IOV VF create + switchdev (Mellanox) — PFs listed for {{ bond_name }} via netplan
+DefaultDependencies=no
+Requires=mlnx-discover.service
+After=mlnx-discover.service systemd-udev-settle.service
+Wants=systemd-udev-settle.service
+Before=network-pre.target
+Wants=network-pre.target
+ConditionPathExists=/etc/lcm/pfs.json
+RefuseManualStart=yes
+RefuseManualStop=yes
+
+[Service]
+Type=oneshot
+RemainAfterExit=yes
+Environment=BOND_NAME={{ bond_name }}
+Environment=SRIOV_VF_COUNT={{ num_vfs }}
+Environment=PFS_WAIT_TIMEOUT=180
+Environment=PFS_WAIT_INTERVAL=1
+ExecStartPre=/usr/local/sbin/mlnx-wait-pfs.sh
+ExecStart=/usr/local/sbin/mlnx-vflag-early.sh
+SuccessExitStatus=0
+
+[Install]
+WantedBy=network-pre.target

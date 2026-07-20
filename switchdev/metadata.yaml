@@ -1,0 +1,5 @@
+name: switchdev
+version: 1.0.0
+docURL: https://github.com/Mirantis/mosk-hocm-contrib/blob/main/switchdev/README.md
+description: 'Module for enable ASAP2 switchdev mode on supported NICs'
+playbook: main.yaml

@@ -1,0 +1,111 @@
+---
+- name: Mitigate Dirty Frag Vulnerabilities (CVE-2026-43284 / CVE-2026-43500)
+  hosts: all
+  tasks:
+    - name: Apply Dirty Frag mitigation
+      when: not (values.revert | default(false))
+      block:
+        - name: Gather active kernel modules
+          ansible.builtin.command: lsmod
+          register: lsmod_output
+          changed_when: false
+
+        - name: Create blocklist configuration to prevent future loading of rxrpc module
+          ansible.builtin.copy:
+            dest: "/etc/modprobe.d/blacklist-rxrpc.conf"
+            owner: root
+            group: root
+            mode: '0644'
+            content: |
+              # Mitigate Dirty Frag LPE (CVE-2026-43284, CVE-2026-43500)
+              install rxrpc /bin/false
+
+        - name: Create blocklist configuration to prevent future loading of esp4/esp6 modules
+          when: not (values.skipDisablingEspModules | default(false))
+          ansible.builtin.copy:
+            dest: "/etc/modprobe.d/blacklist-esp.conf"
+            owner: root
+            group: root
+            mode: '0644'
+            content: |
+              # Mitigate Dirty Frag LPE (CVE-2026-43284, CVE-2026-43500)
+              install esp4 /bin/false
+              install esp6 /bin/false
+
+        - name: Process rxrpc kernel module
+          when: "'rxrpc' in lsmod_output.stdout"
+          block:
+            - name: Runtime unload module rxrpc
+              ansible.builtin.modprobe:
+                name: rxrpc
+                state: absent
+              register: unload_rxrpc
+              ignore_errors: true
+
+        - name: Process esp4 and esp6 kernel modules
+          when:
+          - not (values.skipDisablingEspModules | default(false))
+          - "'esp4' in lsmod_output.stdout or 'esp6' in lsmod_output.stdout"
+          block:
+            - name: Flush IPsec xfrm state and policy to clear module hooks
+              ansible.builtin.command: "{{ item }}"
+              loop:
+                - "ip xfrm state flush"
+                - "ip xfrm policy flush"
+              changed_when: true
+
+            - name: Runtime unload module esp4
+              ansible.builtin.modprobe:
+                name: esp4
+                state: absent
+              register: unload_esp4
+              ignore_errors: true
+
+            - name: Runtime unload module esp6
+              ansible.builtin.modprobe:
+                name: esp6
+                state: absent
+              register: unload_esp6
+              ignore_errors: true
+
+        - name: Post-unload actions
+          when: >
+            (unload_rxrpc is defined and not unload_rxrpc.get('skipped', false)) or
+            (unload_esp4 is defined and not unload_esp4.get('skipped', false)) or
+            (unload_esp6 is defined and not unload_esp6.get('skipped', false))
+          block:
+            - name: Flush page cache to purge volatile in-memory exploitation
+              ansible.builtin.shell: sync; echo 3 > /proc/sys/vm/drop_caches
+              changed_when: true
+
+            - name: Request a reboot
+              ansible.builtin.command: /bin/true
+              notify: "request reboot"
+              changed_when: true
+
+    - name: Revert Dirty Frag mitigation
+      when:
+      - values.revert is defined
+      - values.revert
+      block:
+        - name: Remove persistent modprobe blacklist configurations
+          ansible.builtin.file:
+            path: "/etc/modprobe.d/{{ item }}"
+            state: absent
+          loop:
+            - blacklist-rxrpc.conf
+            - blacklist-esp.conf
+
+  handlers:
+    - name: Create /run/day2
+      ansible.builtin.file:
+        path: /run/day2
+        state: directory
+      listen: "request reboot"
+
+    - name: Update /run/day2/reboot-required with reboot reason
+      ansible.builtin.lineinfile:
+        path: "/run/day2/reboot-required"
+        line: "Reboot is required by Dirty-Frag mitigation HOCM"
+        create: true
+      listen: "request reboot"

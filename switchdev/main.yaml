@@ -1,0 +1,66 @@
+---
+- name: Install Mellanox VF scripts and systemd units (LCM) — only act on PFs configured in bond2 (via netplan get)
+  hosts: all
+  become: true
+
+  vars:
+    lcm_state_dir: /etc/lcm
+    lcm_pfs_json: "{{ lcm_state_dir }}/pfs.json"
+    bond_name: "{{ values.bond_name | default('bond2') }}"
+    num_vfs: "{{ values.num_vfs | default(8) }}"
+
+  tasks:
+    - name: Ensure required packages are present
+      package:
+        name:
+          - jq
+          - iproute2
+          - netplan.io
+        state: present
+
+    - name: Ensure LCM state directory exists
+      file:
+        path: "{{ lcm_state_dir }}"
+        state: directory
+        owner: root
+        group: root
+        mode: '0755'
+
+    - name: Install Mellanox helper scripts
+      copy:
+        src: "{{ item }}"
+        dest: "/usr/local/sbin/{{ item }}"
+        owner: root
+        group: root
+        mode: '0755'
+      loop:
+        - mlnx-discover.sh
+        - mlnx-wait-pfs.sh
+        - mlnx-vflag-early.sh
+        - mlnx-vflag-final.sh
+
+    - name: Install systemd units (env BOND_NAME and SRIOV_VF_COUNT propagated)
+      template:
+        src: "{{ item }}.j2"
+        dest: "/etc/systemd/system/{{ item }}"
+        owner: root
+        group: root
+        mode: '0644'
+      loop:
+        - mlnx-discover.service
+        - mlnx-vflag-early.service
+        - mlnx-vflag-final.service
+
+    - name: Reload systemd
+      systemd:
+        daemon_reload: true
+
+    - name: Enable services (do not start now)
+      systemd:
+        name: "{{ item }}"
+        enabled: true
+        state: stopped
+      loop:
+        - mlnx-discover.service
+        - mlnx-vflag-early.service
+        - mlnx-vflag-final.service

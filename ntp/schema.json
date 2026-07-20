@@ -1,0 +1,14 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "type": "object",
+  "properties": {
+    "ntp_servers": {
+      "type": "array",
+      "description": "List of NTP servers",
+      "items": {
+        "type": "string"
+      }
+    }
+  },
+  "required": ["ntp_servers"]
+}

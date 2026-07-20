@@ -1,0 +1,65 @@
+---
+- name: Manage Copy Fail Vulnerability (CVE-2026-31431) Mitigation
+  hosts: all
+  become: true
+  tasks:
+    - name: Apply Copy Fail Mitigation
+      when:
+      - not (values.revert | default(False))
+      block:
+        - name: Persistently block aglif_aead kernel module
+          ansible.builtin.copy:
+            dest: /etc/modprobe.d/blacklist-algif_aead.conf
+            content: |
+              # Mitigate Copy Fail (CVE-2026-31431)
+              install algif_aead /bin/false
+            owner: root
+            group: root
+            mode: '0644'
+          register: blacklist_config
+
+        - name: Runtime unload module algif_aead
+          ansible.builtin.modprobe:
+            name: algif_aead
+            state: absent
+          register: unload_module
+          ignore_errors: true
+
+        - name: algif_aead module post-unload actions
+          when:
+            - (unload_module.changed or unload_module.failed)
+          block:
+          - name: Flush page cache to purge volatile in-memory exploitation
+            ansible.builtin.shell: sync; echo 3 > /proc/sys/vm/drop_caches
+            when:
+              - unload_module.changed
+
+          - name: Request a reboot
+            ansible.builtin.command: /bin/true
+            notify: "request reboot"
+            changed_when: true
+
+    - name: Revert Copy Fail Mitigation
+      when:
+      - values.revert is defined
+      - values.revert
+      block:
+        - name: Remove persistent modprobe blacklist configuration
+          ansible.builtin.file:
+            path: /etc/modprobe.d/blacklist-algif_aead.conf
+            state: absent
+          register: remove_blacklist
+
+  handlers:
+    - name: Create /run/day2
+      ansible.builtin.file:
+        path: /run/day2
+        state: directory
+      listen: "request reboot"
+
+    - name: Update /run/day2/reboot-required with reboot reason
+      ansible.builtin.lineinfile:
+        path: "/run/day2/reboot-required"
+        line: "Reboot is required by Copy-Fail mitigation HOCM"
+        create: true
+      listen: "request reboot"

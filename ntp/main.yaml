@@ -1,0 +1,71 @@
+---
+- name: Configuring NTP settings
+  hosts: all
+  become: true
+  tasks:
+    - name: Gather service facts
+      service_facts:
+      no_log: true
+
+    - name: Install NTP package
+      package:
+        name: chrony
+        state: present
+      retries: 3
+      delay: 10
+      register: pkg_result
+      until: pkg_result is succeeded
+
+    - name: Disable systemd-timesyncd if it exists
+      service:
+        name: systemd-timesyncd
+        state: stopped
+        enabled: false
+      register: systemd_timesyncd_disable
+      when:
+        - ansible_facts.services is contains('systemd-timesyncd.service')
+
+    - name: Disable ntp if it exists
+      service:
+        name: ntp
+        state: stopped
+        enabled: false
+      when:
+        - ansible_facts.services is contains('ntp.service')
+        - ansible_facts.services['ntp.service'].status is defined
+        - ansible_facts.services['ntp.service'].status != 'not-found'
+
+    - name: Disable ntpd if it exists
+      service:
+        name: ntpd
+        state: stopped
+        enabled: false
+      when:
+        - ansible_facts.services is contains('ntpd.service')
+        - ansible_facts.services['ntpd.service'].status is defined
+        - ansible_facts.services['ntpd.service'].status != 'not-found'
+
+    - name: Template out chrony config
+      template:
+        src: chrony.conf.j2
+        dest: /etc/chrony/chrony.conf
+        mode: '0644'
+      notify:
+        - Restart ntp
+
+    - name: Flush handlers
+      meta: flush_handlers
+
+    - name: Validate time synchronisation
+      shell: "chronyc tracking | grep -qE '^Leap status.*Normal$'"
+      delay: 10
+      register: time_sync_ready
+      retries: 12
+      until: time_sync_ready.rc == 0
+      changed_when: false
+
+  handlers:
+    - name: Restart ntp
+      service:
+        name: chrony
+        state: restarted

@@ -1,0 +1,6 @@
+name: copyfail_mitigation
+description: 'Module mitigating CVE-2026-31431 "Copy-Fail"'
+version: 1.1.0
+valuesJsonSchema: schema.json
+docURL: https://github.com/Mirantis/mosk-hocm-contrib/blob/main/copyfail_mitigation/README.md
+playbook: main.yaml

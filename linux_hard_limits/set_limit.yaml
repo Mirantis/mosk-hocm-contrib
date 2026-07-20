@@ -1,0 +1,8 @@
+- name: Set limits to limits.conf
+  with_dict: "{{ outer_item.value }}"
+  community.general.pam_limits:
+    domain: "{{ outer_item.key }}"
+    limit_type: "hard"
+    limit_item: "{{ item.key }}"
+    value: "{{ item.value }}"
+    dest: "{{ limits_filename }}"
