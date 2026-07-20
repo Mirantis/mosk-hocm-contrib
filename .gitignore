@@ -14,5 +14,10 @@ dist/
 *.cover
 .idea/
 
+.pytest_cache/
+.venv/
+.ansible/
+__pycache__/
+
 go.work
 go.work.sum
