@@ -1,0 +1,6 @@
+name: local-users-groups
+description: 'Strict management of local users, groups, and memberships'
+version: 2.0.0
+valuesJsonSchema: schema.json
+playbook: main.yaml
+

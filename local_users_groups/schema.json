@@ -1,0 +1,95 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "type": "object",
+  "properties": {
+    "default_shell": {
+      "type": "string",
+      "description": "Default login shell for managed users.",
+      "minLength": 1,
+      "default": "/bin/bash"
+    },
+    "uid_range": {
+      "type": "array",
+      "description": "Optional UID range [min, max] used when creating users without an explicit uid.",
+      "items": {
+        "type": "integer",
+        "minimum": 0
+      },
+      "minItems": 2,
+      "maxItems": 2
+    },
+    "gid_range": {
+      "type": "array",
+      "description": "Optional GID range [min, max] used when creating groups without an explicit gid.",
+      "items": {
+        "type": "integer",
+        "minimum": 0
+      },
+      "minItems": 2,
+      "maxItems": 2
+    },
+    "groups": {
+      "type": "array",
+      "description": "List of managed local groups.",
+      "items": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "description": "Name of the group.",
+            "minLength": 1
+          },
+          "gid": {
+            "type": "integer",
+            "description": "Optional group ID. When omitted, a GID from gid_range is assigned if configured; otherwise the system assigns a GID.",
+            "minimum": 0
+          },
+          "users": {
+            "type": "array",
+            "description": "Users that should be members of this group (managed or existing local users).",
+            "items": {
+              "type": "string",
+              "minLength": 1
+            },
+            "default": []
+          }
+        },
+        "required": ["name"],
+        "additionalProperties": false
+      },
+      "default": []
+    },
+    "users": {
+      "type": "array",
+      "description": "List of managed local users.",
+      "items": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "description": "Name of the user.",
+            "minLength": 1
+          },
+          "uid": {
+            "type": "integer",
+            "description": "Optional user ID. When omitted, a UID from uid_range is assigned if configured; otherwise the system assigns a UID.",
+            "minimum": 0
+          },
+          "groups": {
+            "type": "array",
+            "description": "Managed groups the user should belong to (supplementary groups).",
+            "items": {
+              "type": "string",
+              "minLength": 1
+            },
+            "default": []
+          }
+        },
+        "required": ["name"],
+        "additionalProperties": false
+      },
+      "default": []
+    }
+  },
+  "additionalProperties": false
+}

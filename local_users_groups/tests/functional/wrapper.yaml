@@ -1,0 +1,4 @@
+---
+- import_playbook: ../../main.yaml
+  vars:
+    values: "{{ test_values }}"

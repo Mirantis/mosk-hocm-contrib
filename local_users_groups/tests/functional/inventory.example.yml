@@ -1,0 +1,22 @@
+# Example inventory for functional tests.
+#
+# Functional tests generate inventory at runtime under tests/functional/.ansible/
+# from environment variables (that directory is gitignored).
+# Copy this file to .ansible/inventory.yml if you prefer a static inventory.
+#
+# Required env var: TEST_HOST
+# Optional env vars:
+#   TEST_USER      (default: current user)
+#   TEST_SSH_KEY   (path to private key)
+#
+# ansible_become is always enabled; passwordless sudo is required.
+
+all:
+  hosts:
+    testhost:
+      ansible_host: 192.0.2.10
+      ansible_user: ubuntu
+      ansible_ssh_private_key_file: ~/.ssh/id_rsa
+      ansible_become: true
+      ansible_become_method: sudo
+      ansible_become_flags: -H -n

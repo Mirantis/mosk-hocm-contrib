@@ -1,0 +1,105 @@
+---
+- hosts: all
+  become: yes
+  gather_facts: true
+  vars:
+    _fact_file: /etc/ansible/facts.d/mosk_local_users_groups.fact
+
+  tasks:
+    - name: Validate input, reconcile managed users and groups
+      ansible.builtin.set_fact:
+        _reconciled: >-
+          {{
+            values
+            | normalize_users_groups(ansible_local.mosk_local_users_groups | default({}))
+          }}
+
+    - name: Ensure ansible facts directory exists
+      ansible.builtin.file:
+        path: /etc/ansible/facts.d
+        state: directory
+        mode: '0755'
+
+    - name: Ensure managed groups exist
+      ansible.builtin.group:
+        name: "{{ item.name }}"
+        gid: "{{ item.gid | default(omit) }}"
+        # Blocked until MOSK ansible-core >= 2.18 (gid_min/gid_max added in 2.18).
+        # gid_min: "{{ item.gid_min | default(omit) }}"
+        # gid_max: "{{ item.gid_max | default(omit) }}"
+        state: present
+      loop: "{{ _reconciled.to_ensure.groups }}"
+      loop_control:
+        label: "{{ item.name }}"
+
+    - name: Ensure managed users exist
+      ansible.builtin.user:
+        name: "{{ item.name }}"
+        uid: "{{ item.uid | default(omit) }}"
+        # Blocked until MOSK ansible-core >= 2.18 (uid_min/uid_max added in 2.18).
+        # uid_min: "{{ item.uid_min | default(omit) }}"
+        # uid_max: "{{ item.uid_max | default(omit) }}"
+        group: "{{ item.group }}"
+        groups: "{{ item.groups }}"
+        shell: "{{ item.shell }}"
+        password: '*'
+        update_password: always
+        state: present
+        create_home: true
+      loop: "{{ _reconciled.to_ensure.users }}"
+      loop_control:
+        label: "{{ item.name }}"
+
+    - name: Add external user memberships
+      ansible.builtin.command:
+        argv:
+          - adduser
+          - "{{ item.user }}"
+          - "{{ item.group }}"
+      loop: "{{ _reconciled.to_ensure.ext_memberships | default([]) }}"
+      register: _ext_membership_add_result
+      failed_when: >
+        _ext_membership_add_result.rc != 0 and
+        ('already a member' not in (_ext_membership_add_result.stdout | default('') + _ext_membership_add_result.stderr | default('')))
+      changed_when: _ext_membership_add_result.rc == 0
+      loop_control:
+        label: "{{ item.user }} -> {{ item.group }}"
+
+    - name: Remove external user memberships
+      ansible.builtin.command:
+        argv:
+          - deluser
+          - "{{ item.user }}"
+          - "{{ item.group }}"
+      loop: "{{ _reconciled.to_remove.ext_memberships | default([]) }}"
+      when: item.user not in _reconciled.to_remove.users
+      register: _ext_membership_remove_result
+      failed_when: >
+        _ext_membership_remove_result.rc != 0 and
+        ('not a member' not in (_ext_membership_remove_result.stdout | default('') + _ext_membership_remove_result.stderr | default('')))
+      changed_when: _ext_membership_remove_result.rc == 0
+      loop_control:
+        label: "{{ item.user }} -> {{ item.group }}"
+
+    - name: Remove managed users no longer in configuration
+      ansible.builtin.user:
+        name: "{{ item }}"
+        state: absent
+        remove: true
+      loop: "{{ _reconciled.to_remove.users }}"
+      loop_control:
+        label: "{{ item }}"
+
+    - name: Remove managed groups no longer in configuration
+      ansible.builtin.group:
+        name: "{{ item }}"
+        state: absent
+      loop: "{{ _reconciled.to_remove.groups }}"
+      loop_control:
+        label: "{{ item }}"
+
+    - name: Write managed state to local facts
+      ansible.builtin.copy:
+        dest: "{{ _fact_file }}"
+        content: "{{ _reconciled.fact | to_nice_json }}"
+        mode: '0644'
