@@ -14,6 +14,8 @@ from normalize_users_groups import (  # noqa: E402
     DEFAULT_GROUP,
     DEFAULT_SHELL,
     FilterModule,
+    RESERVED_GROUPS,
+    RESERVED_USERS,
 )
 
 
@@ -22,4 +24,12 @@ def normalize():
     return FilterModule().filters()["normalize_users_groups"]
 
 
-__all__ = ["DEFAULT_GROUP", "DEFAULT_SHELL", "FilterModule", "MODULE_DIR", "normalize"]
+__all__ = [
+    "DEFAULT_GROUP",
+    "DEFAULT_SHELL",
+    "FilterModule",
+    "MODULE_DIR",
+    "RESERVED_GROUPS",
+    "RESERVED_USERS",
+    "normalize",
+]

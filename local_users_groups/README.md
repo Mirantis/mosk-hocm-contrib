@@ -14,6 +14,7 @@ local facts.
 - `groups` and `users` entities are provided separately
 - Optional `uid` and `gid` overrides per user / group
 - Automatic creation of the `mosk_managed_users` primary group for users to distinguish them
+- Reserved system user and group names cannot be managed via top-level `users` / `groups`
 - External local users are never created or removed; only their memberships in managed groups are enforced
 - Managed users' passwords are locked (`*`); use password-less auth (e.g. SSH keys)
 - `default_shell` controls the login shell for all managed users
@@ -75,11 +76,27 @@ The local fact file (`/etc/ansible/facts.d/mosk_local_users_groups.fact`) stores
 Memberships are derived from both `groups[].users` and `users[].groups`:
 
 - For a **managed user** listed in `groups[].users` or `users[].groups`, membership is applied via `ansible.builtin.user` supplementary groups. That list is the full desired set: undeclared supplementary group memberships for that user are removed.
-- For an **existing local user** listed only in `groups[].users`, membership is tracked in `ext_memberships` and applied with `adduser` / `deluser`. Only those declared memberships in managed groups are added or removed; other memberships of that external user are left unchanged.
+- For an **existing local user** listed only in `groups[].users`, membership is tracked in `ext_memberships` and applied with `adduser` / `deluser`. Only those declared memberships in **managed** groups are added or removed; other memberships of that external user are left unchanged.
+
+Supported membership paths always involve at least one module-managed side:
+
+- Managed user ↔ managed or existing group
+- Existing (non-managed) user ↔ managed group
+
+**Unsupported:** using the module only to add or remove an already existing local user to or from an already existing local group. The module is not a general membership manager for two pre-existing entities.
 
 A group's `users` list may name any existing local user, not only users defined in the `users` section. A managed user's `groups` list may reference groups defined in the `groups` section or already present on the system.
 
-Each managed user uses `mosk_managed_users` as its primary group. That group is created automatically when users are defined. The name `mosk_managed_users` is reserved and must not appear in the `groups` section.
+### Reserved names
+
+The following names cannot appear in top-level `users` or `groups` (the module rejects attribute management / takeover of these accounts and groups):
+
+| Kind | Reserved names |
+|------|----------------|
+| Users | `root`, `mcc-user`, `etcd`, `kube-apiserver`, `kube-scheduler`, `konnectivity-server` |
+| Groups | `root`, `mcc-user`, `etcd`, `kube-apiserver`, `kube-scheduler`, `konnectivity-server`, `docker`, `sudo`, `adm`, `mosk_managed_users` |
+
+Each managed user uses `mosk_managed_users` as its primary group. That group is created automatically when users are defined.
 
 Note: removing a managed group will fail if non-managed users are still members of that group.
 
@@ -128,9 +145,9 @@ In this example:
 
 - `alice` has no explicit `uid` or `groups`, so her UID is system-assigned. She becomes a member of `admins` via the group record.
 - `bob` is created with explicit UID `2001` and supplementary group `developers`. He is also listed as a member of `developers` via the group record.
-- `vincent` has no explicit `uid` and is added to the existing `sudo` group via `users[].groups`.
+- `vincent` has no explicit `uid` and is added to the existing `sudo` group via `users[].groups` (managed user joins an existing group).
 
-All three managed users (`alice`, `bob`, and `vincent`) use `mosk_managed_users` as their primary group. That group is created automatically and also receives a system-assigned GID until range options are enabled. `external_system_user` is not managed as a user account; only its membership in `admins` is enforced and tracked in `ext_memberships`.
+All three managed users (`alice`, `bob`, and `vincent`) use `mosk_managed_users` as their primary group. That group is created automatically. `external_system_user` is not managed as a user account; only its membership in the managed `admins` group is enforced and tracked in `ext_memberships`.
 
 To remove all module-managed users and groups, provide empty lists:
 

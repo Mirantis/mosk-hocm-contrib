@@ -10,6 +10,8 @@ short_description: Normalize managed users/groups input and reconcile with store
 description:
   - Accepts playbook input and the mosk_local_users_groups local fact.
   - Returns the desired fact payload, entities to remove, and work items to apply on the host.
+  - Rejects reserved user and group names in top-level C(users) and C(groups)
+    (see C(RESERVED_USERS) and C(RESERVED_GROUPS)).
 options:
   _input:
     description:
@@ -102,6 +104,32 @@ returns:
 DEFAULT_GROUP = "mosk_managed_users"
 DEFAULT_SHELL = "/bin/bash"
 
+RESERVED_USERS = frozenset(
+    {
+        "root",
+        "mcc-user",
+        "etcd",
+        "kube-apiserver",
+        "kube-scheduler",
+        "konnectivity-server",
+    }
+)
+
+RESERVED_GROUPS = frozenset(
+    {
+        "root",
+        "mcc-user",
+        "etcd",
+        "kube-apiserver",
+        "kube-scheduler",
+        "konnectivity-server",
+        "docker",
+        "sudo",
+        "adm",
+        DEFAULT_GROUP,
+    }
+)
+
 
 class FilterModule:
     """Ansible filter plugin entry point."""
@@ -139,7 +167,7 @@ class FilterModule:
 
         self._validate_uid_gid_range(input_config.get("uid_range", []), "uid_range")
         self._validate_uid_gid_range(input_config.get("gid_range", []), "gid_range")
-        self._validate_reserved_default_group(groups)
+        self._validate_reserved_names(groups, users)
         self._validate_duplicate_names(groups, "group")
         self._validate_duplicate_names(users, "user")
 
@@ -225,12 +253,23 @@ class FilterModule:
             )
 
     @staticmethod
-    def _validate_reserved_default_group(groups: list[dict[str, Any]]) -> None:
+    def _validate_reserved_names(
+        groups: list[dict[str, Any]],
+        users: list[dict[str, Any]],
+    ) -> None:
         for group in groups:
-            if group["name"] == DEFAULT_GROUP:
+            name = group["name"]
+            if name in RESERVED_GROUPS:
                 raise ValueError(
-                    f"Group name '{DEFAULT_GROUP}' is reserved for the module "
-                    "default primary group."
+                    f"Group name '{name}' is reserved and cannot be managed "
+                    "by this module."
+                )
+        for user in users:
+            name = user["name"]
+            if name in RESERVED_USERS:
+                raise ValueError(
+                    f"User name '{name}' is reserved and cannot be managed "
+                    "by this module."
                 )
 
     @staticmethod

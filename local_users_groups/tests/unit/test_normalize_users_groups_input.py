@@ -25,6 +25,38 @@ def test_reserved_default_group_name_raises(normalize) -> None:
         normalize({"groups": [{"name": "admin"}, {"name": DEFAULT_GROUP}]}, {})
 
 
+def test_reserved_user_name_raises(normalize) -> None:
+    with pytest.raises(ValueError, match="User name 'root' is reserved"):
+        normalize({"users": [{"name": "root"}]}, {})
+
+
+def test_reserved_group_name_raises(normalize) -> None:
+    with pytest.raises(ValueError, match="Group name 'sudo' is reserved"):
+        normalize({"groups": [{"name": "sudo"}]}, {})
+
+
+def test_managed_user_may_reference_reserved_group(normalize) -> None:
+    result = normalize(
+        {
+            "users": [{"name": "alice", "groups": ["sudo"]}],
+        },
+        {},
+    )
+    assert result["to_ensure"]["users"][0]["groups"] == ["sudo"]
+
+
+def test_managed_group_may_list_reserved_external_user(normalize) -> None:
+    result = normalize(
+        {
+            "groups": [{"name": "operators", "users": ["root"]}],
+        },
+        {},
+    )
+    assert result["to_ensure"]["ext_memberships"] == [
+        {"user": "root", "group": "operators"}
+    ]
+
+
 def test_duplicate_group_names_raise(normalize) -> None:
     with pytest.raises(ValueError, match="Duplicate group name 'admins'"):
         normalize(
